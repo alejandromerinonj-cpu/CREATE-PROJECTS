@@ -1,0 +1,20 @@
+# Windows‑native CLI guides — .NET 10 / WinUI / Windows App SDK (editor‑free)
+
+This folder contains concise, step‑by‑step, CLI‑first guides for building, testing, packaging and running Microsoft Windows apps without Visual Studio or VS Code. Each file is self‑contained and shows exact commands you can copy into PowerShell.
+
+Files:
+- `01-dotnet-cli.md` — dotnet SDK & core CLI commands (install, build, publish)
+- `02-windows-sdk.md` — Windows SDK tools (MakeAppx, SignTool)
+- `03-windows-app-sdk-winui.md` — Windows App SDK / WinUI (NuGet + build)
+- `04-msix-packaging.md` — MSIX packaging & signing (MakeAppx + SignTool)
+- `05-sqlserver-localdb-efcore.md` — LocalDB / SQL Server + EF Core steps
+- `06-dotnet-tools.md` — dotnet global tools (ef, watch, trace, dump)
+- `07-ci-windows-actions.md` — GitHub Actions (Windows) — build/test/package/upload
+- `08-no-git-workflow.md` — editor‑free workflow and local snapshot backups
+- `09-secrets-config.md` — secrets & config without Git
+- `10-ignored-files.md` — recommended files to *not* version (for later use with Git)
+
+How to use:
+1. Open any file in `docs/` with Notepad or PowerShell `Get-Content`. 
+2. Copy the commands and paste them into PowerShell (run as needed). 
+3. Ask me to scaffold any sample project from these steps.

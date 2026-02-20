@@ -1,0 +1,13 @@
+<Window
+    x:Class="WinUIApp.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WinUIApp"
+    Title="WinUIApp">
+  <Grid>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+      <TextBlock x:Name="ResultText" Text="Press the button to call the API" FontSize="18" Margin="0,0,0,12"/>
+      <Button Content="Call API" Click="OnCallApiClicked" Width="140"/>
+    </StackPanel>
+  </Grid>
+</Window>

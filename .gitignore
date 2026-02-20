@@ -1,3 +1,56 @@
+# Visual Studio / .NET
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+artifacts/
+TestResults/
+publish/
+
+# NuGet
+.nuget/
+**/[Pp]ackages/*
+packages/
+*.nupkg
+*.snupkg
+project.assets.json
+
+# MSBuild / dotnet logs
+*.binlog
+*.msbuild.log
+
+# Windows App SDK / MSIX packaging
+AppPackages/
+BundleArtifacts/
+*.msix
+*.msixbundle
+*.appx
+*.appxupload
+AppxManifest*.xml
+AppxBlockMap.xml
+AppxSignature.p7x
+
+# LSP / analyzer caches
+.omnisharp/
+*.roslyncache
+*.cache
+
+# Windows system files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Secrets / certificates
+*.pfx
+*.p12
+secrets.json
+.env
+
+# Misc
+.vscode/
 node_modules/
-.vscode
-.DS_Store

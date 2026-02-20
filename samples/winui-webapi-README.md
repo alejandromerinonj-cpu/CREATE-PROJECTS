@@ -13,7 +13,10 @@ Run the sample (order matters):
    - dotnet run --project src/WinUIApp
 
 Or run both with the helper script (recommended):
-   - PowerShell: `.\	emplates\..\..\scripts\run-sample.ps1`  (from repository root)
+   - PowerShell: `.\\scripts\\run-sample.ps1`  (from repository root)
+
+CI packaging:
+- The repository includes a GitHub Actions workflow (`.github/workflows/package-msix.yml`) that builds `WinUIApp`, creates a signed MSIX, and uploads it as a workflow artifact on push to `main`.
 
 Expected behavior:
 - The API responds at http://localhost:5000/hello

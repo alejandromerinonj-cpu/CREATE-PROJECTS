@@ -1,0 +1,79 @@
+name: Build & package WinUIApp (MSIX)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-package:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.x
+          cache: true
+
+      - name: Restore & publish WinUIApp
+        run: |
+          dotnet restore src/WinUIApp
+          dotnet publish src/WinUIApp -c Release -r win-x64 -o publish\WinUIApp
+
+      - name: Locate MakeAppx and signtool
+        shell: pwsh
+        run: |
+          $make = Get-ChildItem 'C:\\Program Files (x86)\\Windows Kits\\10\\bin' -Recurse -Filter MakeAppx.exe | Select-Object -First 1
+          $sig = Get-ChildItem 'C:\\Program Files (x86)\\Windows Kits\\10\\bin' -Recurse -Filter signtool.exe | Select-Object -First 1
+          if (-not $make) { throw 'MakeAppx.exe not found on runner' }
+          if (-not $sig) { throw 'signtool.exe not found on runner' }
+          echo "MAKEAPPX=$($make.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding ascii -Append
+          echo "SIGNTOOL=$($sig.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding ascii -Append
+
+      - name: Create AppxManifest for packaging
+        shell: pwsh
+        run: |
+          $manifest = @'
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10">
+  <Identity Name="WinUIApp.Sample" Publisher="CN=DevCert" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>WinUIApp</DisplayName>
+    <PublisherDisplayName>Dev</PublisherDisplayName>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.19041.0"/>
+  </Dependencies>
+  <Resources>
+    <Resource Language="en-us"/>
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="WinUIApp.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="WinUIApp" Description="CLI sample" />
+    </Application>
+  </Applications>
+</Package>
+'@
+          Set-Content -Path publish\WinUIApp\AppxManifest.xml -Value $manifest -Encoding utf8
+
+      - name: Package with MakeAppx
+        shell: pwsh
+        run: |
+          & $env:MAKEAPPX pack /d publish\WinUIApp /p WinUIApp.msix
+
+      - name: Create self-signed cert and sign MSIX
+        shell: pwsh
+        run: |
+          $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject "CN=DevCert" -CertStoreLocation "Cert:\CurrentUser\My"
+          $pwd = ConvertTo-SecureString -String "P@ssw0rd2026!" -Force -AsPlainText
+          Export-PfxCertificate -Cert "Cert:\CurrentUser\My\$($cert.Thumbprint)" -FilePath WinUIAppCert.pfx -Password $pwd
+          & $env:SIGNTOOL sign /fd SHA256 /a /f WinUIAppCert.pfx /p P@ssw0rd2026! WinUIApp.msix
+
+      - name: Upload MSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinUIApp-msix
+          path: WinUIApp.msix
